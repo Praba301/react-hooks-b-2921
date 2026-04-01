@@ -39,26 +39,28 @@ export default function Game1() {
         if (prev <= 1) {
           clearInterval(countdown);
           setGameActive(false);
+
+          toast.info("🕐 Waktu habis!", {
+            autoClose: 1500,
+          });
+
+          if (score > highScore) {
+            localStorage.setItem("whack_highscore", score.toString());
+            setHighScore(score);
+            toast.success("🏆 New High Score!", {
+              autoClose: 1500,
+            });
+          }
+
           return 0;
         }
+
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(countdown);
-  }, [gameActive]);
-
-  // Detect waktu habis
-  useEffect(() => {
-    if (time === 0 && !gameActive) {
-      toast.info("🕐 Waktu habis!", { autoClose: 1500 });
-      if (score > highScore) {
-        localStorage.setItem("whack_highscore", score.toString());
-        setHighScore(score);
-        toast.success("🏆 New High Score!", { autoClose: 1500 });
-      }
-    }
-  }, [time, gameActive]);
+  }, [gameActive, score, highScore]);
 
   const hitMole = (index: number) => {
     if (index === moleIndex && gameActive) {
@@ -71,7 +73,10 @@ export default function Game1() {
     setScore(0);
     setTime(30);
     setGameActive(true);
-    toast.info("⏰ Waktu dimulai! Kamu punya 30 detik!", { autoClose: 1500 });
+
+    toast.info("⏰ Waktu dimulai! Kamu punya 30 detik!", {
+      autoClose: 1500,
+    });
   };
 
   return (
@@ -84,7 +89,9 @@ export default function Game1() {
           <div className="timer">⏰ Time: {time}</div>
         </div>
 
-        <div className="highscore">⭐ High Score: {highScore}</div>
+        <div className="highscore">
+          ⭐ High Score: {highScore}
+        </div>
 
         {!gameActive && (
           <button className="start-btn" onClick={startGame}>
@@ -95,8 +102,14 @@ export default function Game1() {
 
       <div className="game-grid">
         {holes.map((_, index) => (
-          <div key={index} onClick={() => hitMole(index)} className="hole">
-            {moleIndex === index && <div className="mole">🐭</div>}
+          <div
+            key={index}
+            onClick={() => hitMole(index)}
+            className="hole"
+          >
+            {moleIndex === index && (
+              <div className="mole">🐭</div>
+            )}
           </div>
         ))}
       </div>
